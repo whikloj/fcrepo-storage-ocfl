@@ -1345,8 +1345,10 @@ public class DefaultOcflObjectSessionTest {
         write(session2, descContent2);
         session2.commit();
 
-        assertVersions(session.listVersions(resourceId), "v1", "v2");
-        assertVersions(session.listVersions(descId), "v1", "v2");
+        final var session3 = sessionFactory.newSession(resourceId);
+
+        assertVersions(session3.listVersions(resourceId), "v1", "v2");
+        assertVersions(session3.listVersions(descId), "v1", "v2");
     }
 
     @Test
