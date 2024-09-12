@@ -75,7 +75,7 @@ public class DefaultOcflObjectSessionTest {
 
     private Path ocflRoot;
     private Path sessionStaging;
-    private boolean useUnsafeWrite;
+    private final boolean useUnsafeWrite;
 
     private MutableOcflRepository ocflRepo;
     private OcflObjectSessionFactory sessionFactory;
@@ -872,9 +872,11 @@ public class DefaultOcflObjectSessionTest {
         write(session3, ResourceUtils.partBinary(DEFAULT_AG_BINARY_ID, DEFAULT_AG_ID, DEFAULT_AG_ID, "updated"));
         session3.commit();
 
-        assertVersions(session3.listVersions(DEFAULT_AG_ID), "v1", "v2", "v3");
-        assertVersions(session3.listVersions(DEFAULT_AG_BINARY_ID), "v1", "v3");
-        assertVersions(session3.listVersions(binary2Id), "v2");
+        final var session4 = sessionFactory.newSession(DEFAULT_AG_ID);
+
+        assertVersions(session4.listVersions(DEFAULT_AG_ID), "v1", "v2", "v3");
+        assertVersions(session4.listVersions(DEFAULT_AG_BINARY_ID), "v1", "v3");
+        assertVersions(session4.listVersions(binary2Id), "v2");
     }
 
     @Test(expected = NotFoundException.class)
