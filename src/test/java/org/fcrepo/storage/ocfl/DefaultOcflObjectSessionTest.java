@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
@@ -1278,8 +1279,9 @@ public class DefaultOcflObjectSessionTest {
 
         close(defaultAgBinary());
 
-        assertVersions(session.listVersions(DEFAULT_AG_ID), "v1", "v2");
-        assertVersions(session.listVersions(DEFAULT_AG_BINARY_ID), "v2");
+        final var session2 = sessionFactory.newSession(DEFAULT_AG_ID);
+        assertVersions(session2.listVersions(DEFAULT_AG_ID), "v1", "v2");
+        assertVersions(session2.listVersions(DEFAULT_AG_BINARY_ID), "v2");
     }
 
     @Test
@@ -1299,6 +1301,7 @@ public class DefaultOcflObjectSessionTest {
         session2.commit();
 
         final var agHeaders = session2.readHeaders(DEFAULT_AG_ID);
+        await().atMost(5, TimeUnit.SECONDS).until(() -> !agHeaders.getLastModifiedDate().equals(timestamp));
         assertEquals(timestamp, agHeaders.getMementoCreatedDate());
         assertNotEquals(timestamp, agHeaders.getLastModifiedDate());
     }
