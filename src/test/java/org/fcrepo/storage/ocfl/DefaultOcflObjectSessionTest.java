@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,12 +59,15 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * @author pwinckles
  */
 @RunWith(Parameterized.class)
 public class DefaultOcflObjectSessionTest {
+
+    private final Logger LOGGER = getLogger(DefaultOcflObjectSessionTest.class);
 
     @Rule
     public TemporaryFolder temp = TemporaryFolder.builder().assureDeletion().build();
@@ -1292,6 +1296,7 @@ public class DefaultOcflObjectSessionTest {
 
         final var binary = ResourceUtils.partBinary(DEFAULT_AG_BINARY_ID, DEFAULT_AG_ID, DEFAULT_AG_ID, "bar");
         final var timestamp = binary.getHeaders().getLastModifiedDate();
+        LOGGER.info("timestamp is " + timestamp.toString());
 
         TimeUnit.SECONDS.sleep(1);
 
@@ -1302,6 +1307,7 @@ public class DefaultOcflObjectSessionTest {
         final var session3 = sessionFactory.newSession(DEFAULT_AG_ID);
         final var agHeaders = session3.readHeaders(DEFAULT_AG_ID);
         assertEquals(timestamp, agHeaders.getMementoCreatedDate());
+        LOGGER.info("Now timestamp is " + timestamp + " and lastmodified is " + agHeaders.getLastModifiedDate());
         assertNotEquals(timestamp, agHeaders.getLastModifiedDate());
     }
 
