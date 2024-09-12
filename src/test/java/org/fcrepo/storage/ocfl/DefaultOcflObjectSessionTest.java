@@ -43,13 +43,12 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
@@ -1300,8 +1299,8 @@ public class DefaultOcflObjectSessionTest {
         write(session2, binary);
         session2.commit();
 
-        final var agHeaders = session2.readHeaders(DEFAULT_AG_ID);
-        await().atMost(5, TimeUnit.SECONDS).until(() -> !agHeaders.getLastModifiedDate().equals(timestamp));
+        final var session3 = sessionFactory.newSession(DEFAULT_AG_ID);
+        final var agHeaders = session3.readHeaders(DEFAULT_AG_ID);
         assertEquals(timestamp, agHeaders.getMementoCreatedDate());
         assertNotEquals(timestamp, agHeaders.getLastModifiedDate());
     }
